@@ -16,7 +16,6 @@ const Meal = server.define("Meal", {
     allowNull: false,
     type: DataTypes.TEXT,
   },
-  constraint,
 });
 
 module.exports = Meal;
