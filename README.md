@@ -12,8 +12,8 @@ Madeleine:
 
 > Let's get cooking!
 
-| Menu          | Option            |
-| ------------- | ----------------- |
-| family        | basic ingredients |
-| vegan         | low protein       |
-| mediterranean | local recipes     |
+| Menu                  | Option            |
+| --------------------- | ----------------- |
+| family :taco:         | basic ingredients |
+| vegan :green_salad:   | low protein       |
+| mediterranean :pizza: | local recipes     |
