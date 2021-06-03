@@ -5,5 +5,5 @@ const server = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
   host: DB_HOST,
   dialect: "mysql",
 });
-
+console.log();
 module.exports = server;
