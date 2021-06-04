@@ -9,6 +9,7 @@ const loadModels = require("./models/relationship");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 const mealsRouter = require("./routes/mealRouter");
+const commentsRouter = require("./routes/commentRouter");
 const tokenValidation = require("./middleware/tokenValidation");
 
 var app = express();
@@ -26,5 +27,6 @@ app.use(tokenValidation);
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/meals", mealsRouter);
+app.use("/comments", commentsRouter);
 
 module.exports = app;
