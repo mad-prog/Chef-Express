@@ -1,12 +1,21 @@
 var express = require("express");
-
 var router = express.Router();
 const userService = require("../services/userService");
 
 router.post("/signup", async (req, res) => {
   try {
-    await userService.createUser(req.body);
+    await userService.signup(req.body);
     res.sendStatus(201);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const webToken = await userService.login(email, password);
+    res.status(200).json(webToken);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
