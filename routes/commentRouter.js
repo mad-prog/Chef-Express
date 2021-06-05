@@ -44,9 +44,9 @@ router.delete("/:id", async (req, res) => {
 router.patch("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const comment = await commentService.editComment(id, req.body);
-    console.log(comment);
-    res.status(200).json(comment);
+    await commentService.editComment(id, req.body);
+    //console.log(comment);
+    res.sendStatus(204);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

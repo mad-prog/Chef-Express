@@ -6,7 +6,7 @@ const {
 } = require("../validations/commentValidation");
 
 exports.addComment = async (comment) => {
-  const validatedComment = insertCommentSchema.validateAsync(comment);
+  const validatedComment = await insertCommentSchema.validateAsync(comment);
   return await commentRepository.insertComment(validatedComment);
 };
 
@@ -23,11 +23,10 @@ exports.removeComment = async (id) => {
 };
 
 exports.editComment = async (id, commentInfo) => {
-  //TODO
-
-  //const validatedCommentInfo = updateCommentSchema.validateAsync(commentInfo);
-
-  //console.log(validatedCommentInfo);
-  //if (!validatedCommentInfo) throw new Error("not validated");
-  return await commentRepository.updateComment(id, commentInfo);
+  console.log(commentInfo);
+  const validatedCommentInfo = await updateCommentSchema.validateAsync(
+    commentInfo
+  );
+  if (!validatedCommentInfo) throw new Error("not validated");
+  await commentRepository.updateComment(id, validatedCommentInfo);
 };
