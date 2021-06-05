@@ -1,4 +1,5 @@
 var express = require("express");
+const roleValidation = require("../middleware/roleValidation");
 var router = express.Router();
 const userService = require("../services/userService");
 
@@ -21,7 +22,8 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get("/all", async (req, res) => {
+//only admin can see all users
+router.get("/all", roleValidation(), async (req, res) => {
   try {
     const users = await userService.getAllUsers();
     res.status(200).json(users);
@@ -30,7 +32,7 @@ router.get("/all", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", roleValidation("user"), async (req, res) => {
   try {
     const { id } = req.params;
     const user = await userService.getUserById(id);
@@ -40,7 +42,8 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+//only admin can delete
+router.delete("/:id", roleValidation(), async (req, res) => {
   try {
     const { id } = req.params;
     await userService.removeUser(id);
@@ -50,11 +53,11 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", roleValidation(), async (req, res) => {
   try {
     const { id } = req.params;
     //const { email, name, password } = req.body;
-    await userService.editUser(id, req.body);
+    await userService.editUser(req.user, id, req.body);
     res.sendStatus(204);
   } catch (error) {
     res.status(400).json({ message: error.message });

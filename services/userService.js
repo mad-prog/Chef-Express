@@ -49,7 +49,16 @@ exports.removeUser = async (id) => {
   return await userRepository.deleteUser(id);
 };
 
-exports.editUser = async (id, userInfo) => {
+exports.editUser = async (user, id, userInfo) => {
+  if (!id || !userInfo) throw new Error("Incomplete information");
+  const userStored = await userRepository.findUserById(id);
+
+  if (!userStored) throw new Error("No user found");
+
+  //only the user (or an admin) can edit user details
+  if (userStored.id !== user.id && user.role !== "admin")
+    throw new Error("You aren't authorised to change this");
+
   const validatedUser = await updateUserSchema.validateAsync(userInfo);
   if (!validatedUser) throw new Error("You must provide valid info");
   await userRepository.updateUser(id, validatedUser);
