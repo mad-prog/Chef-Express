@@ -1,4 +1,4 @@
-const server = require("../config/server");
+const sequelize = require("../config/sequelize");
 const User = require("./User");
 const Meal = require("./Meal");
 const Comment = require("./Comment");
@@ -20,6 +20,7 @@ const loadModels = () => {
   Comment.belongsTo(User);
   Comment.belongsTo(Meal);
 
-  server.sync().then(() => console.log("Let's start cooking, good lookin'"));
+  sequelize.sync().then(() => console.log("Let's start cooking, good lookin'"));
 };
+
 module.exports = loadModels;

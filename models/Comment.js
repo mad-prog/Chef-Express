@@ -1,8 +1,8 @@
 const { DataTypes } = require("sequelize");
-const server = require("../config/server");
+const sequelize = require("../config/sequelize");
 const { MEAL_RATINGS } = require("../utils/constants");
 
-const Comment = server.define("Comment", {
+const Comment = sequelize.define("Comment", {
   id: {
     primaryKey: true,
     allowNull: false,
