@@ -1,9 +1,10 @@
 const express = require("express");
+const roleValidation = require("../middleware/roleValidation");
 const router = express.Router();
 
 const mealService = require("../services/mealService");
 
-router.post("/", async (req, res) => {
+router.post("/", roleValidation(["user", "mod"]), async (req, res) => {
   try {
     await mealService.createMeal(req.body);
     res.sendStatus(204);
@@ -12,7 +13,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/all", async (req, res) => {
+router.get("/all", roleValidation(["user", "mod"]), async (req, res) => {
   try {
     const meals = await mealService.getAllMeals();
     res.status(200).json(meals);
@@ -21,7 +22,7 @@ router.get("/all", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", roleValidation(["user", "mod"]), async (req, res) => {
   try {
     const { id } = req.params;
     const meal = await mealService.getMealById(id);
@@ -31,7 +32,8 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+//only admin & mod can delete meals
+router.delete("/:id", roleValidation("mod"), async (req, res) => {
   try {
     const { id } = req.params;
     const meal = await mealService.removeMeal(id);
@@ -41,13 +43,14 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", roleValidation(["user", "mod"]), async (req, res) => {
   try {
     const { id } = req.params;
-    const meal = await mealService.editMeal(id, req.body);
+    const meal = await mealService.editMeal(req.user, id, req.body);
     res.status(200).json(meal);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
+
 module.exports = router;

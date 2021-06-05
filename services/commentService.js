@@ -4,6 +4,8 @@ const {
   insertCommentSchema,
   updateCommentSchema,
 } = require("../validations/commentValidation");
+const mealRepository = require("../repositories/mealRepository");
+const { use } = require("../routes/users");
 
 exports.addComment = async (comment) => {
   const validatedComment = await insertCommentSchema.validateAsync(comment);
@@ -18,7 +20,20 @@ exports.getComment = async (id) => {
   return await commentRepository.findCommentById(id);
 };
 
-exports.removeComment = async (id) => {
+//Deletions by admin/mod/comment owner, meal owner
+exports.removeComment = async (user, id) => {
+  const storedComment = await commentRepository.findCommentById(id);
+  if (!storedComment) throw new Error("Comment not found");
+  const commentAuthor = storedComment.UserId;
+  const storedMeal = await mealRepository.findMealById(storedComment.MealId);
+  const mealAuthor = storedMeal.UserId;
+  if (
+    commentAuthor !== user.id &&
+    mealAuthor !== user.id &&
+    user.role !== "admin" &&
+    user.role !== "mod"
+  )
+    throw new Error("You're not authorized to delete this");
   return await commentRepository.deleteComment(id);
 };
 

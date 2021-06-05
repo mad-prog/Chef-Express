@@ -24,6 +24,5 @@ exports.deleteMeal = async (id) => {
 };
 
 exports.updateMeal = async (id, mealInfo) => {
-  const meal = Meal.findByPk(id);
   return await Meal.update(mealInfo, { where: { id } });
 };
