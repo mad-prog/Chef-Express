@@ -1,11 +1,9 @@
-const { response } = require("express");
 const commentRepository = require("../repositories/commentRespository");
 const {
   insertCommentSchema,
   updateCommentSchema,
 } = require("../validations/commentValidation");
 const mealRepository = require("../repositories/mealRepository");
-const { use } = require("../routes/users");
 
 exports.addComment = async (comment) => {
   const validatedComment = await insertCommentSchema.validateAsync(comment);
@@ -28,8 +26,8 @@ exports.removeComment = async (user, id) => {
   const storedMeal = await mealRepository.findMealById(storedComment.MealId);
   const mealAuthor = storedMeal.UserId;
   if (
-    commentAuthor !== user.id &&
-    mealAuthor !== user.id &&
+    user.id !== commentAuthor &&
+    user.id !== mealAuthor &&
     user.role !== "admin" &&
     user.role !== "mod"
   )
@@ -37,8 +35,15 @@ exports.removeComment = async (user, id) => {
   return await commentRepository.deleteComment(id);
 };
 
-exports.editComment = async (id, commentInfo) => {
-  console.log(commentInfo);
+exports.editComment = async (user, id, commentInfo) => {
+  const storedComment = await commentRepository.findCommentById(id);
+  if (!storedComment) throw new Error("Comment not found");
+  if (
+    user.id !== storedComment.UserId &&
+    user.role !== "admin" &&
+    user.role !== "mod"
+  )
+    throw new Error("You're not authorized to change this");
   const validatedCommentInfo = await updateCommentSchema.validateAsync(
     commentInfo
   );

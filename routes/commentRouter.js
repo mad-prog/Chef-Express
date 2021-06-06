@@ -15,7 +15,7 @@ router.post("/", roleValidation(["user", "mod"]), async (req, res) => {
 
 //downstream before getById to avoid clash
 //only admin
-router.get("/all", roleValidation(), async (req, res) => {
+router.get("/all", roleValidation("admin"), async (req, res) => {
   try {
     const comments = await commentService.getAllComments();
     res.status(200).json(comments);
@@ -44,11 +44,11 @@ router.delete("/:id", roleValidation(["mod", "user"]), async (req, res) => {
   }
 });
 
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", roleValidation(["mod", "user"]), async (req, res) => {
   try {
     const { id } = req.params;
-    await commentService.editComment(id, req.body);
-    //console.log(comment);
+    await commentService.editComment(req.user, id, req.body);
+
     res.sendStatus(204);
   } catch (error) {
     res.status(400).json({ message: error.message });

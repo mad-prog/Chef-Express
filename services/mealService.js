@@ -21,7 +21,18 @@ exports.removeMeal = async (id) => {
   return await mealRepository.deleteMeal(id);
 };
 
-exports.editMeal = async (id, mealInfo) => {
+exports.editMeal = async (user, id, mealInfo) => {
+  const storedMeal = await mealRepository.findMealById(id);
+  if (!storedMeal) throw new Error("No meal found");
+
+  //only user who posted the meal and admin/mod can update
+  if (
+    user.id !== storedMeal.UserId &&
+    user.role !== "admin" &&
+    user.role !== "mod"
+  )
+    throw new Error("You aren't authorised to change this");
+
   const validatedMeal = await updateMealSchema.validateAsync(mealInfo);
-  return await mealRepository.updateMeal(id, mealInfo);
+  return await mealRepository.updateMeal(id, validatedMeal);
 };
