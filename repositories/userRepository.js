@@ -1,4 +1,6 @@
 const User = require("../models/User");
+const HttpError = require("../utils/httpError");
+const ERRORS = require("../utils/constants");
 
 exports.insertUser = async (user) => {
   return await User.create(user);
@@ -24,7 +26,7 @@ exports.findUserWithPasswordByEmail = async (email) => {
 
 exports.deleteUser = async (id) => {
   const user = User.findByPk(id);
-  if (!user) throw new Error("User not found");
+  if (!user) throw new HttpError(404, ERRORS.INVALID_USER);
   const destroyedRow = await User.destroy({ where: { id } });
   return destroyedRow;
 };

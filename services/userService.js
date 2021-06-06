@@ -5,11 +5,16 @@ const {
 } = require("../validations/userValidation");
 const encryptPassword = require("../utils/encryptPassword");
 const { generateWebToken } = require("./jwtService");
+const HttpError = require("../utils/httpError");
+const ERRORS = require("../utils/constants");
 
 exports.signup = async (user) => {
+  const { email, password } = user;
+  if (!email || !password) {
+    throw new HttpError(400, ERRORS.NO_USER_DATA_PROVIDED);
+  }
   const validatedUser = await insertUserSchema.validateAsync(user);
-  if (!validatedUser)
-    throw new Error("You must provide a valid email and a strong password");
+  if (!validatedUser) throw new HttpError(418, ERRORS.INVALID_DATA);
   const encryptedPassword = await encryptPassword(validatedUser.password);
 
   await userRepository.insertUser({
@@ -20,20 +25,19 @@ exports.signup = async (user) => {
 
 exports.login = async (email, password) => {
   if (!email || !password)
-    throw new Error("You must enter a valid email and password");
+    throw new HttpError(400, ERRORS.NO_USER_DATA_PROVIDED);
 
   const user = await userRepository.findUserWithPasswordByEmail(email);
 
-  if (!user) throw new Error("User not found");
+  if (!user) throw new HttpError(400, ERRORS.INVALID_USER);
 
   const encryptedPassword = await encryptPassword(password);
 
   if (encryptedPassword !== user.password) {
-    throw new Error("Please enter correct email and password");
+    throw new HttpError(400, ERRORS.NO_USER_DATA_PROVIDED);
   }
 
   const token = generateWebToken(user.id, user.email, user.role);
-  console.log(token);
   return token;
 };
 
@@ -50,16 +54,18 @@ exports.removeUser = async (id) => {
 };
 
 exports.editUser = async (user, id, userInfo) => {
-  if (!id || !userInfo) throw new Error("Incomplete information");
+  console.log(userInfo);
+  //TODO this does not function.
+  if (!id || !userInfo) throw new HttpError(400, ERRORS.INVALID_DATA);
   const userStored = await userRepository.findUserById(id);
 
-  if (!userStored) throw new Error("No user found");
+  if (!userStored) throw new HttpError(404, ERRORS.INVALID_USER);
 
   //only the user (or an admin) can edit user details
   if (userStored.id !== user.id && user.role !== "admin")
-    throw new Error("You aren't authorised to change this");
+    throw new HttpError(401, ERRORS.INVALID_AUTHORIZATION);
 
   const validatedUser = await updateUserSchema.validateAsync(userInfo);
-  if (!validatedUser) throw new Error("You must provide valid info");
+  if (!validatedUser) throw new HttpError(400, ERRORS.INVALID_DATA);
   await userRepository.updateUser(id, validatedUser);
 };
