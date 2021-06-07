@@ -13,12 +13,16 @@ exports.signup = async (user) => {
   if (!email || !password) {
     throw new HttpError(400, ERRORS.NO_USER_DATA_PROVIDED);
   }
-  const validatedUser = await insertUserSchema.validateAsync(user);
-  if (!validatedUser) throw new HttpError(418, ERRORS.INVALID_DATA);
-  const encryptedPassword = await encryptPassword(validatedUser.password);
+  try {
+    await insertUserSchema.validateAsync(user);
+  } catch (error) {
+    throw new HttpError(418, ERRORS.INVALID_DATA);
+  }
+
+  const encryptedPassword = await encryptPassword(user.password);
 
   await userRepository.insertUser({
-    ...validatedUser,
+    ...user,
     password: encryptedPassword,
   });
 };
@@ -38,6 +42,7 @@ exports.login = async (email, password) => {
   }
 
   const token = generateWebToken(user.id, user.email, user.role);
+  //store in local storage, and then use it to go to /me endpoint
   return token;
 };
 

@@ -14,7 +14,7 @@ const Comment = sequelize.define("Comment", {
   },
   rating: {
     type: DataTypes.ENUM(Object.values(MEAL_RATINGS)),
-    defaultValue: MEAL_RATINGS.OK,
+    defaultValue: MEAL_RATINGS.FIVE,
   },
 });
 

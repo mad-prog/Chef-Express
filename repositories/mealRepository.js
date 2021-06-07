@@ -1,6 +1,8 @@
 const Meal = require("../models/Meal");
 const User = require("../models/User");
 const Comment = require("../models/Comment");
+const { Op, Sequelize } = require("sequelize");
+const { MEAL_RATINGS } = require("../utils/constants");
 
 const populate = {
   include: [
@@ -28,13 +30,60 @@ exports.findAllMeals = async () => {
   return await Meal.findAll(populate);
 };
 
+exports.findAllMealsWithNamedIngredient = async (ingredientsearchword) => {
+  return await Meal.findAll({
+    where: { ingredients: { [Op.substring]: ingredientsearchword } },
+    ...populate,
+  });
+};
+
+exports.findAllMealsWithCategory = async (searchCategory) => {
+  return await Meal.findAll({
+    limit: 5,
+    where: { category: searchCategory },
+    order: ["category", "DESC"],
+
+    include: [
+      {
+        model: User,
+        attributes: ["name"],
+      },
+      {
+        model: Comment,
+        attributes: ["content", "rating"],
+        include: {
+          model: User,
+          attributes: ["name"],
+        },
+      },
+    ],
+  });
+};
+
 exports.findMealById = async (id) => {
   const meal = await Meal.findByPk(id, populate);
   console.log(meal);
   return meal;
 };
 
+exports.findMealRandom = async () => {
+  const meal = await Meal.findOne(
+    { order: Sequelize.literal("rand()") },
+    populate
+  );
+  return meal;
+};
+
+exports.findThreeMealsRandom = async () => {
+  const meal = await Meal.findAll(
+    { order: Sequelize.literal("rand()"), limit: 3 },
+    populate
+  );
+  return meal;
+};
+
 /*
+pagination
 exports.findAndCountAllMeals = async () => {
   return await Meal.findAndCountAll();
 };
