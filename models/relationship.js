@@ -20,7 +20,9 @@ const loadModels = () => {
   Comment.belongsTo(User);
   Comment.belongsTo(Meal);
 
-  sequelize.sync().then(() => console.log("Let's start cooking, good lookin'"));
+  sequelize
+    .sync({})
+    .then(() => console.log("Let's start cooking, good lookin'"));
 };
 
 module.exports = loadModels;
