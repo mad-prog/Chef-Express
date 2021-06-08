@@ -40,7 +40,7 @@ Madeleine:
 
 ## Basic Structure
 
-This RESTful API is an exercise to understand a 1:M relationship using a **MySQL** database. I built a **NODE.js** server to handle the promise-based transactions with MySQL through the ORM **Sequelize**.
+This RESTful API is an exercise to understand a 1:M relationship using a **MySQL** database. I built a **NODE.js** server to handle the promise-based HTTP transactions with MySQL through the ORM **Sequelize**.
 
 Future proyects - front-end. - enable upload photos of meals. - more complex search functions. - pass from signup straight to login/ or users/me endpoint
 
@@ -92,7 +92,7 @@ This creates the following relationship:
 &nbsp;
 &nbsp;
 
-![The relationship between the tables define the RESTful API](./img/menutables.png)
+![The relationship between the tables define the RESTful API](https://res.cloudinary.com/madeleinetestcloud/image/upload/v1623147144/poseidon/roqobdhpx81ou3np4hah.png)
 
 &nbsp;
 &nbsp;
