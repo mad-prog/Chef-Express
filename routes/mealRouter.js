@@ -11,7 +11,10 @@ router.post(
   //multer.single("HappyApiMeal"),
   async (req, res, next) => {
     try {
-      await mealService.createMeal(req.body);
+      if (req.file) {
+        let imgPath = req.file.path;
+      }
+      await mealService.createMeal({ ...req.body });
       res.sendStatus(204);
     } catch (error) {
       next(error);
@@ -44,17 +47,6 @@ router.get("/search:category?:ingredient?", async (req, res, next) => {
       );
       res.status(200).json(meals);
     }
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.get("/category/:category", async (req, res, next) => {
-  try {
-    const searchCategoryWord = req.params.category;
-    console.log("category" + searchCategoryWord);
-    const meals = await mealService.getAllMealsWithCategory(searchCategoryWord);
-    res.status(200).json(meals);
   } catch (error) {
     next(error);
   }

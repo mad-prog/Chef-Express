@@ -1,10 +1,10 @@
 exports.MEAL_RATINGS = Object.freeze({
-  ZERO: "0",
-  ONE: "1",
-  TWO: "2",
-  THREE: "3",
-  FOUR: "4",
-  FIVE: "5",
+  ZERO: 0,
+  ONE: 1,
+  TWO: 2,
+  THREE: 3,
+  FOUR: 4,
+  FIVE: 5,
 });
 
 exports.NO_USER_DATA_PROVIDED =
