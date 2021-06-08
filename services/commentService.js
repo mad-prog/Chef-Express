@@ -10,8 +10,12 @@ const HttpError = require("../utils/httpError");
 exports.addComment = async (comment) => {
   const { content, rating } = comment;
   if (!content || !rating) throw new HttpError(400, ERRORS.INVALID_DATA);
-  const validatedComment = await insertCommentSchema.validateAsync(comment);
-  return await commentRepository.insertComment(validatedComment);
+  try {
+    await insertCommentSchema.validateAsync(comment);
+  } catch (error) {
+    throw new HttpError(418, ERRORS.INVALID_DATA);
+  }
+  return await commentRepository.insertComment(comment);
 };
 
 exports.getAllComments = async () => {
@@ -49,9 +53,10 @@ exports.editComment = async (user, id, commentInfo) => {
     user.role !== "mod"
   )
     throw new HttpError(401, ERRORS.INVALID_AUTHORIZATION);
-  const validatedCommentInfo = await updateCommentSchema.validateAsync(
-    commentInfo
-  );
-  if (!validatedCommentInfo) throw new HttpError(400, ERRORS.INVALID_DATA);
-  await commentRepository.updateComment(id, validatedCommentInfo);
+  try {
+    await updateCommentSchema.validateAsync(commentInfo);
+  } catch (error) {
+    throw new HttpError(418, ERRORS.INVALID_DATA);
+  }
+  await commentRepository.updateComment(id, commentInfo);
 };
