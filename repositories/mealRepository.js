@@ -2,6 +2,7 @@ const Meal = require("../models/Meal");
 const User = require("../models/User");
 const Comment = require("../models/Comment");
 const { Op, Sequelize } = require("sequelize");
+const { sequelize } = require("../models/Meal");
 
 const populate = {
   include: [
@@ -25,12 +26,40 @@ exports.insertMeal = async (meal) => {
 };
 
 exports.findAllMeals = async () => {
-  return await Meal.findAll(populate);
+  return await Meal.findAll({
+    attributes: {
+      include: [
+        [
+          sequelize.literal(
+            "(SELECT AVG(rating) FROM comments as comment WHERE comment.mealId = meal.id)"
+          ),
+          "avgRating",
+        ],
+      ],
+    },
+    ...populate,
+    order: [[sequelize.literal("avgRating"), "DESC"]],
+  });
 };
 
+/*
+//string search
 exports.findAllMealsWithNamedIngredient = async (ingredientsearchword) => {
   return await Meal.findAll({
     where: { ingredients: { [Op.substring]: ingredientsearchword } },
+    ...populate,
+  });
+};
+*/
+
+//RegEx
+exports.findAllMealsWithNamedIngredient = async (ingredientsearchword) => {
+  return await Meal.findAll({
+    where: {
+      ingredients: {
+        [Op.regexp]: `^[${ingredientsearchword.split("").join("|")}]`,
+      },
+    },
     ...populate,
   });
 };
@@ -40,14 +69,18 @@ exports.findAllMealsWithCategory = async (searchCategory) => {
     limit: 5,
     where: { category: searchCategory },
     // order: ["category", "DESC"],
+    attributes: {
+      include: [
+        [
+          sequelize.literal(
+            "(SELECT AVG(rating) FROM comments as comment WHERE comment.mealId = meal.id)"
+          ),
+          "avgRating",
+        ],
+      ],
+    },
     ...populate,
-    //order: [[Sequelize.literal("'Comment.rating'"), "DESC"]],
-    // order: [
-    //   Comment.associations.Meal,
-    //   Meal.associations.Comment,
-    //   "rating",
-    //   "DESC",
-    // ],
+    order: [[sequelize.literal("avgRating"), "DESC"]],
   });
 };
 
