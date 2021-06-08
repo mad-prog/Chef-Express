@@ -9,6 +9,10 @@ const Meal = sequelize.define("Meal", {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
   },
+  title: {
+    allowNull: false,
+    type: DataTypes.STRING,
+  },
   ingredients: {
     allowNull: false,
     type: DataTypes.TEXT,

@@ -60,7 +60,6 @@ exports.removeUser = async (id) => {
 
 exports.editUser = async (user, id, userInfo) => {
   console.log(userInfo);
-  //TODO this does not function.
   if (!id || !userInfo) throw new HttpError(400, ERRORS.INVALID_DATA);
   const userStored = await userRepository.findUserById(id);
 

@@ -3,15 +3,21 @@ const router = express.Router();
 
 const roleValidation = require("../middleware/roleValidation");
 const mealService = require("../services/mealService");
+const multer = require("../middleware/multer");
 
-router.post("/", roleValidation(["user", "mod"]), async (req, res, next) => {
-  try {
-    await mealService.createMeal(req.body);
-    res.sendStatus(204);
-  } catch (error) {
-    next(error);
+router.post(
+  "/",
+  roleValidation(["user", "mod"]),
+  //multer.single("HappyApiMeal"),
+  async (req, res, next) => {
+    try {
+      await mealService.createMeal(req.body);
+      res.sendStatus(204);
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 router.get("/all", roleValidation(["user", "mod"]), async (req, res, next) => {
   try {
@@ -22,6 +28,7 @@ router.get("/all", roleValidation(["user", "mod"]), async (req, res, next) => {
   }
 });
 //post?
+//rolevalidation
 router.get("/search:category?:ingredient?", async (req, res, next) => {
   try {
     const ingredientsearchword = req.query.ingredient;
@@ -56,6 +63,7 @@ router.get("/category/:category", async (req, res, next) => {
   }
 });
 
+//roleValidation
 router.get("/random", async (req, res, next) => {
   try {
     const { id } = req.user;

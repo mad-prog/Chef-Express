@@ -1,6 +1,5 @@
 const nodemailer = require("nodemailer");
 const loadConfig = require("../config/nodemailer");
-
 const mealRepository = require("../repositories/mealRepository");
 const {
   insertMealSchema,
@@ -11,8 +10,9 @@ const ERRORS = require("../utils/constants");
 const HttpError = require("../utils/httpError");
 
 exports.createMeal = async (meal) => {
-  const { ingredients, recipe } = meal;
-  if (!ingredients || !recipe) throw new HttpError(400, ERRORS.INVALID_DATA);
+  const { ingredients, recipe, title, category } = meal;
+  if (!ingredients || !recipe || !title || !category)
+    throw new HttpError(400, ERRORS.INVALID_DATA);
   const validatedMeal = await insertMealSchema.validateAsync(meal);
 
   const ingredientsString = meal.ingredients.join(" ");
@@ -49,27 +49,25 @@ exports.getRandomMealPlan = async (id) => {
   const mealplan = await mealRepository.findThreeMealsRandom();
   if (!mealplan.length) throw new HttpError(404, ERRORS.INVALID_MEAL);
   const user = await userRepository.findUserById(id);
-  console.log(user);
   const email = user.email;
-  console.log(email);
 
   const mealPlanArrayOfStrings = mealplan
     .map((meal, i) => {
       const { ingredients, recipe, category } = meal.toJSON();
-      return `${i + 1} recipe:
+      return `${i + 1})
     You're going to need the following ingredients for this ${category} recipe:
      ${ingredients}, 
      Follow this method:
-     ${recipe}`;
+     ${recipe} \n`;
     })
     .toString();
 
-  const mealPlanMessage = "Thanks for requesting this meal plan! ";
+  const mealPlanMessage = `Thanks for requesting this meal plan! \n`;
 
   const emailMessage = mealPlanMessage.concat(mealPlanArrayOfStrings);
-  const subject = "Meal Planner";
-  console.log(subject);
-  await this.sendMailWithPlan(email, emailMessage, subject);
+  //const subject = "Meal Planner";
+  console.log(emailMessage);
+  await this.sendMailWithPlan(email, emailMessage, "Meal Planner");
   return mealplan;
 };
 

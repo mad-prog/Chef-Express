@@ -27,7 +27,7 @@ exports.insertMeal = async (meal) => {
 
 exports.findAllMeals = async () => {
   console.log("test");
-  return await Meal.findAll(populate);
+  return await Meal.findAll({ ...populate });
 };
 
 exports.findAllMealsWithNamedIngredient = async (ingredientsearchword) => {
@@ -41,21 +41,14 @@ exports.findAllMealsWithCategory = async (searchCategory) => {
   return await Meal.findAll({
     limit: 5,
     where: { category: searchCategory },
-    order: ["category", "DESC"],
-
-    include: [
-      {
-        model: User,
-        attributes: ["name"],
-      },
-      {
-        model: Comment,
-        attributes: ["content", "rating"],
-        include: {
-          model: User,
-          attributes: ["name"],
-        },
-      },
+    // order: ["category", "DESC"],
+    ...populate,
+    //order: [[Sequelize.literal("'Comment.rating'"), "DESC"]],
+    order: [
+      Comment.associations.Meal,
+      Meal.associations.Comment,
+      "rating",
+      "DESC",
     ],
   });
 };
