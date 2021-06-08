@@ -34,19 +34,16 @@ router.get("/search:category?:ingredient?", async (req, res, next) => {
     const ingredientsearchword = req.query.ingredient;
     const categorySearchWord = req.query.category;
     if (ingredientsearchword) {
-      console.log(ingredientsearchword);
       const meals = await mealService.getAllMealsWithNamedIngredient(
         ingredientsearchword
       );
       res.status(200).json(meals);
     } else if (categorySearchWord) {
-      console.log("category" + categorySearchWord);
       const meals = await mealService.getAllMealsWithCategory(
         categorySearchWord
       );
       res.status(200).json(meals);
     }
-    console.log(categorySearchWord);
   } catch (error) {
     next(error);
   }

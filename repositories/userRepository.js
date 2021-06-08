@@ -25,7 +25,7 @@ exports.findUserWithPasswordByEmail = async (email) => {
 };
 
 exports.deleteUser = async (id) => {
-  const user = User.findByPk(id);
+  const user = await User.findByPk(id);
   if (!user) throw new HttpError(404, ERRORS.INVALID_USER);
   const destroyedRow = await User.destroy({ where: { id } });
   return destroyedRow;

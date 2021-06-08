@@ -22,9 +22,7 @@ router.post("/login", async (req, res, next) => {
   }
 });
 
-//TODO if empty can still access from browser
 //only admin can see all users
-
 router.get("/all", roleValidation("admin"), async (req, res, next) => {
   try {
     const users = await userService.getAllUsers();

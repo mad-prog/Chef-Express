@@ -2,7 +2,6 @@ const Meal = require("../models/Meal");
 const User = require("../models/User");
 const Comment = require("../models/Comment");
 const { Op, Sequelize } = require("sequelize");
-const { MEAL_RATINGS } = require("../utils/constants");
 
 const populate = {
   include: [
@@ -26,8 +25,7 @@ exports.insertMeal = async (meal) => {
 };
 
 exports.findAllMeals = async () => {
-  console.log("test");
-  return await Meal.findAll({ ...populate });
+  return await Meal.findAll(populate);
 };
 
 exports.findAllMealsWithNamedIngredient = async (ingredientsearchword) => {
@@ -44,26 +42,17 @@ exports.findAllMealsWithCategory = async (searchCategory) => {
     // order: ["category", "DESC"],
     ...populate,
     //order: [[Sequelize.literal("'Comment.rating'"), "DESC"]],
-    order: [
-      Comment.associations.Meal,
-      Meal.associations.Comment,
-      "rating",
-      "DESC",
-    ],
+    // order: [
+    //   Comment.associations.Meal,
+    //   Meal.associations.Comment,
+    //   "rating",
+    //   "DESC",
+    // ],
   });
 };
 
 exports.findMealById = async (id) => {
   const meal = await Meal.findByPk(id, populate);
-  console.log(meal);
-  return meal;
-};
-
-exports.findMealRandom = async () => {
-  const meal = await Meal.findOne(
-    { order: Sequelize.literal("rand()") },
-    populate
-  );
   return meal;
 };
 

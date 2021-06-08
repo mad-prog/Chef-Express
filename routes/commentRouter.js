@@ -13,7 +13,7 @@ router.post("/", roleValidation(["user", "mod"]), async (req, res, next) => {
   }
 });
 
-//downstream before getById to avoid clash
+//upstream before getById to avoid clash
 //only admin
 router.get("/all", roleValidation("admin"), async (req, res, next) => {
   try {
