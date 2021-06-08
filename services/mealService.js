@@ -65,7 +65,7 @@ exports.getRandomMealPlan = async (id) => {
      Follow this method:
      ${recipe} \n`;
     })
-    .toString();
+    .join(" ");
 
   const mealPlanMessage = `Thanks for requesting this meal plan from Chef-Express, the Happy API Meal! \n`;
 
