@@ -8,17 +8,22 @@ const {
 const userRepository = require("../repositories/userRepository");
 const ERRORS = require("../utils/constants");
 const HttpError = require("../utils/httpError");
+const { sendMailWithPlan } = require("../services/mailService");
 
 exports.createMeal = async (meal) => {
   const { ingredients, recipe, title, category } = meal;
   if (!ingredients || !recipe || !title || !category)
     throw new HttpError(400, ERRORS.INVALID_DATA);
-  const validatedMeal = await insertMealSchema.validateAsync(meal);
+
+  try {
+    await insertMealSchema.validateAsync(meal);
+  } catch (error) {
+    throw new HttpError(400, ERRORS.INVALID_DATA);
+  }
 
   const ingredientsString = meal.ingredients.join(" ");
-
-  validatedMeal.ingredients = ingredientsString;
-  await mealRepository.insertMeal(validatedMeal);
+  meal.ingredients = ingredientsString;
+  await mealRepository.insertMeal(meal);
 };
 
 exports.getAllMeals = async () => {
@@ -62,32 +67,13 @@ exports.getRandomMealPlan = async (id) => {
     })
     .toString();
 
-  const mealPlanMessage = `Thanks for requesting this meal plan! \n`;
+  const mealPlanMessage = `Thanks for requesting this meal plan from Chef-Express, the Happy API Meal! \n`;
 
   const emailMessage = mealPlanMessage.concat(mealPlanArrayOfStrings);
-  //const subject = "Meal Planner";
-  console.log(emailMessage);
-  await this.sendMailWithPlan(email, emailMessage, "Meal Planner");
+  const emailSubjectLine = "Chef-Express:Meal Planner";
+
+  await sendMailWithPlan(email, emailMessage, emailSubjectLine);
   return mealplan;
-};
-
-exports.sendMailWithPlan = async (email, text, subject) => {
-  if (!email || !subject || !text)
-    throw new HttpError(400, ERRORS.INVALID_USER);
-
-  const mailConfig = await loadConfig();
-  const transport = nodemailer.createTransport(mailConfig);
-  const message = {
-    from: "test.node.madeleine@gmail.com",
-    to: "madeleine_elliot@hotmail.com",
-    //should be client email
-    subject,
-    text,
-    replyTo: email,
-  };
-  transport.sendMail(message, (err, info) => {
-    console.log(info, err);
-  });
 };
 
 exports.removeMeal = async (id) => {
@@ -105,7 +91,10 @@ exports.editMeal = async (user, id, mealInfo) => {
     user.role !== "mod"
   )
     throw new HttpError(401, ERRORS.INVALID_AUTHORIZATION);
-
-  const validatedMeal = await updateMealSchema.validateAsync(mealInfo);
-  return await mealRepository.updateMeal(id, validatedMeal);
+  try {
+    await updateMealSchema.validateAsync(mealInfo);
+  } catch (error) {
+    throw new HttpError(400, ERRORS.INVALID_DATA);
+  }
+  return await mealRepository.updateMeal(id, mealInfo);
 };
