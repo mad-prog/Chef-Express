@@ -12,7 +12,7 @@ exports.sendMailWithPlan = async (email, text, subject) => {
   const transport = nodemailer.createTransport(mailConfig);
   const message = {
     from: "test.node.madeleine@gmail.com",
-    to: "madeleine_elliot@hotmail.com",
+    to: email,
     //should be client email
     subject,
     text,
